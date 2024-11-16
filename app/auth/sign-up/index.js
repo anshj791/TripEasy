@@ -14,25 +14,19 @@ export default function SignUp() {
   const [fullName,setFullName] = useState();
 
   const onCreateAccount=()=>{
-    if(!email && !password&& !fullName){
-      ToastAndroid.show("Please enter all details",ToastAndroid.BOTTOM);
-      return;
-    }
     createUserWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    // Signed up 
-    const user = userCredential.user;
-    console.log(user);
-    router.replace('/mytrip')
-    
-    // ...
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    console.log(errorMessage,errorCode);
-    // ..
-  });
+    .then((userCredential) => {
+      // Signed up 
+      const user = userCredential.user;
+      console.log(user);
+      // ...
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorMessage,errorCode);
+      // ..
+    });
 
   }
   return (

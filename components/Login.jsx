@@ -36,7 +36,7 @@ Trip Easy ..............        </Text>
           marginTop: 15,
           lineHeight: 24,
         }}>
-          Discover your next adventure effortlessly. Personalized itineraries at your fingertips. Travel smarter with AI-driven insights.
+          {/* Discover your next adventure effortlessly. Personalized itineraries at your fingertips. Travel smarter with AI-driven insights. */}
         </Text>
         <TouchableOpacity style={{
            backgroundColor: '#ff6347',
