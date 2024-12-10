@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, ActivityIndicator, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import * as WebBrowser from 'expo-web-browser';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
 const fetchImage = async (locationName) => {
@@ -138,7 +137,7 @@ const Discover = () => {
   }
 
   return (
-    <LinearGradient colors={['#4c669f', '#3b5998', '#192f6a']} style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -168,27 +167,25 @@ const Discover = () => {
             ) : (
               <Image source={require('./../../assets/images/pl.jpg')} style={styles.cardImage} />
             )}
-            <LinearGradient
-              colors={['transparent', 'rgba(0,0,0,0.8)']}
-              style={styles.cardOverlay}
-            >
+            <View style={styles.cardOverlay}>
               <Text style={styles.cardName}>{place.name}</Text>
               <Text style={styles.cardBrief}>{place.brief}</Text>
               <View style={styles.cardFooter}>
                 <Ionicons name="location" size={16} color="#fff" />
                 <Text style={styles.cardLocation}>{place.country}</Text>
               </View>
-            </LinearGradient>
+            </View>
           </TouchableOpacity>
         ))}
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff', // Set background color to white
   },
   centered: {
     flex: 1,
@@ -205,12 +202,12 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     height: 50,
-    borderColor: '#fff',
+    borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 25,
     paddingHorizontal: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    color: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    color: '#000',
     fontSize: 16,
   },
   searchButton: {
@@ -254,6 +251,7 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'flex-end',
     padding: 10,
+    backgroundColor: 'rgba(0,0,0,0.5)', // Make the overlay dark for better text visibility
   },
   cardName: {
     color: '#fff',
@@ -267,7 +265,7 @@ const styles = StyleSheet.create({
   cardFooter: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 5,
   },
   cardLocation: {
     color: '#fff',

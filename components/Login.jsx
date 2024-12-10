@@ -61,7 +61,7 @@ Trip Easy ..............        </Text>
             fontFamily: 'outfit-bold',
             fontSize: width * 0.045,
           }}>
-            Sign In with Google
+            Let's Start
           </Text>
         </TouchableOpacity>
       </View>

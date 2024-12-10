@@ -1,171 +1,152 @@
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, SafeAreaView, ToastAndroid, AsyncStorage } from 'react-native'; // Import AsyncStorage
-import React, { useEffect, useState } from 'react';
-import { useNavigation, useRouter } from 'expo-router';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { LinearGradient } from 'expo-linear-gradient';
-import { signInWithEmailAndPassword,getAuth } from 'firebase/auth';
-import { auth } from './../../../configs/firebaseConfig'
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { useNavigation } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native'; 
+import { Colors } from '@/constants/Colors';
+import { router } from 'expo-router';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from './../../../configs/firebaseConfig';
+
 export default function SignIn() {
-  const navigation = useNavigation();
-  const router = useRouter();
-  const [email,setEmail] = useState();
-  const [password,setPassword] = useState();
-  useEffect(() => {
-    navigation.setOptions({
-      headerShown: false
-    });
-  }, []);
+    const navigation = useNavigation();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-  const onSignIn=()=>{
-    if(!email && !password){
-      ToastAndroid.show("Please enter Email and Password",ToastAndroid.LONG);
-      return;
-    }
-    signInWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    // Signed in 
-    const user = userCredential.user;
-    router.replace('/mytrip');
-    console.log(user);
+    useFocusEffect(
+        React.useCallback(() => {
+            navigation.setOptions({
+                headerShown: false,
+            });
+            return () => {};
+        }, [navigation])
+    );
 
-    // ...
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    console.log(errorMessage,errorCode);
-    if(errorCode=='auth/invalid-credential'){
-      ToastAndroid.show("Invalid Credentials",ToastAndroid.LONG)
-    }
-  });
+    const signin = () => {
+        // Check if email or password is empty
+        if (!email || !password) {
+            alert("Please fill out all fields!");
+            return;
+        }
 
-  }
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                console.log(user);
+                
+                alert("Login Successful!");
+                router.replace('mytrip');
+            })
+            .catch((error) => {
+                const errorCode = error.code;
 
-  return (
-    <LinearGradient
-      colors={['#4c669f', '#3b5998', '#192f6a']}
-      style={styles.container}
-    >
-      <SafeAreaView style={styles.content}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back-outline" size={30} color="white" />
-        </TouchableOpacity>
+                // Handle different error cases
+                switch (errorCode) {
+                    case 'auth/invalid-email':
+                        alert("Invalid Email Format!");
+                        break;
+                    case 'auth/user-not-found':
+                        alert("No user found with this email!");
+                        break;
+                    case 'auth/wrong-password':
+                        alert("Incorrect Password!");
+                        break;
+                    case 'auth/too-many-requests':
+                        alert("Too many login attempts. Please try again later.");
+                        break;
+                    default:
+                        alert("Login Failed. Please try again.");
+                }
+            });
+    };
 
-        <View style={styles.headerContainer}>
-          <Text style={styles.headerText}>Let's Sign You In</Text>
-          <Text style={styles.subHeaderText}>Welcome Back</Text>
-          <Text style={styles.subHeaderText}>You've been missed</Text>
+    return (
+        <View style={styles.container}>
+            <Text style={styles.title}>Let’s Sign in,</Text>
+
+            <View style={styles.inputContainer}>
+                <Text style={styles.label}>E-mail</Text>
+                <TextInput
+                    placeholder="Enter the Email"
+                    onChangeText={(value) => setEmail(value)}
+                    style={styles.input}
+                    keyboardType="email-address"
+                    value={email}
+                />
+            </View>
+            
+            <View>
+                <Text style={styles.label2}>Password</Text>
+                <TextInput
+                    placeholder="Enter the Password"
+                    style={styles.input}
+                    onChangeText={(value) => setPassword(value)}
+                    secureTextEntry={true}
+                    value={password}
+                />
+            </View>
+
+            <View>
+                <TouchableOpacity onPress={signin}>
+                    <Text style={styles.button}>Sign in</Text>
+                </TouchableOpacity>
+
+                <View style={styles.signup}>
+                    <Text style={{ fontFamily: 'outfit' }}>Don't have an account?</Text>
+                    
+                    <TouchableOpacity onPress={() => router.push('auth/sign-up')}>
+                        <Text style={{ flex: 1, fontFamily: 'outfit-B' }}>Sign Up</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
         </View>
-
-        <View style={styles.formContainer}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder='Enter Email'
-              placeholderTextColor="#a0a0a0"
-              onChangeText={(val) =>setEmail(val)}
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Password</Text>
-            <TextInput
-              secureTextEntry={true}
-              style={styles.input}
-              placeholder='Enter Password'
-              placeholderTextColor="#a0a0a0"
-              onChangeText={(val) =>setPassword(val)}
-            />
-          </View>
-
-          <TouchableOpacity style={styles.signInButton} onPress={onSignIn}>
-            <Text style={styles.signInButtonText}>Sign In</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => router.replace('auth/sign-up')}
-            style={styles.createAccountButton}
-          >
-            <Text style={styles.createAccountButtonText}>Create Account</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    </LinearGradient>
-  );
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    padding: 25,
-    flex: 1,
-    justifyContent: 'center',
-  },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 25,
-  },
-  headerContainer: {
-    marginBottom: 40,
-  },
-  headerText: {
-    fontFamily: 'outfit-bold',
-    fontSize: 32,
-    color: 'white',
-    marginBottom: 10,
-  },
-  subHeaderText: {
-    fontFamily: 'outfit',
-    color: '#e0e0e0',
-    fontSize: 18,
-  },
-  formContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 20,
-    padding: 20,
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  inputLabel: {
-    fontFamily: 'outfit',
-    color: 'white',
-    marginBottom: 5,
-  },
-  input: {
-    padding: 15,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 10,
-    fontFamily: 'outfit',
-    color: 'white',
-  },
-  signInButton: {
-    backgroundColor: '#ff6347',
-    borderRadius: 25,
-    padding: 15,
-    marginTop: 20,
-  },
-  signInButtonText: {
-    color: 'white',
-    textAlign: 'center',
-    fontFamily: 'outfit-bold',
-    fontSize: 16,
-  },
-  createAccountButton: {
-    borderColor: 'white',
-    borderWidth: 1,
-    borderRadius: 25,
-    padding: 15,
-    marginTop: 15,
-  },
-  createAccountButtonText: {
-    color: 'white',
-    textAlign: 'center',
-    fontFamily: 'outfit',
-    fontSize: 16,
-  },
+    container: {
+        padding: 25,
+        height: '100%',
+        marginTop: 80,
+        backgroundColor: '#fff',
+    },
+    title: {
+        fontFamily: 'outfit-B',
+        fontSize: 30,
+        marginTop: 20,
+    },
+    inputContainer: {
+        marginTop: 60,
+        alignItems: 'flex-start',
+        fontFamily: 'outfit-M',
+    },
+    label: {
+        marginLeft: 12,
+        fontFamily: 'outfit',
+    },
+    label2: {
+        marginLeft: 12,
+        marginTop: 35,
+        fontFamily: 'outfit',
+    },
+    input: {
+        borderWidth: 1,
+        borderRadius: 20,
+        padding: 15,
+        width: '100%',
+        fontFamily: 'outfit',
+    },
+    button: {
+        marginTop: '15%',
+        color: '#ECEDEE',
+        backgroundColor: '#151718',
+        fontSize: 14,
+        fontWeight: '700',
+        padding: 20,
+        textAlign: 'center',
+        borderRadius: 99,
+    },
+    signup: {
+        marginTop: 2,
+        alignItems: 'center',
+    },
 });

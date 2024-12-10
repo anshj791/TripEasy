@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, ActivityIndicator, TouchableOpacity, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import StartNewTripCard from '../../components/MyTrips/StartNewTripCard';
@@ -39,31 +39,38 @@ export default function MyTrip() {
   };
 
   return (
-    <View style={{
-      padding: 25,
-      paddingTop: 55,
-      backgroundColor: "#fff",
-      height: "100%"
-    }}>
-      <View style={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignContent: 'center',
-        justifyContent: 'space-between'
-      }}>
-        <Text style={{
-          fontFamily: 'outfit-bold',
-          fontSize: 35,
-        }}>My Trips</Text>
-        <TouchableOpacity onPress={handleAddNewTrip}>
-          <Ionicons name="add-circle-outline" size={50} color="black" />
-        </TouchableOpacity>
-      </View>
-      {loading && <ActivityIndicator size={'large'} color={'#000'} />}
-      {userTrips?.length === 0 ?
-        <StartNewTripCard />
-        : <UserTripList userTrips={userTrips} />
-      }
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      <ScrollView 
+        contentContainerStyle={{ padding: 25, paddingTop: 55 }}
+        showsVerticalScrollIndicator={true} // Enables scrollbar
+      >
+        {/* Header Section */}
+        <View style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignContent: 'center',
+          justifyContent: 'space-between',
+          marginBottom: 20,
+        }}>
+          <Text style={{
+            fontFamily: 'outfit-bold',
+            fontSize: 35,
+          }}>My Trips</Text>
+          <TouchableOpacity onPress={handleAddNewTrip}>
+            <Ionicons name="add-circle-outline" size={50} color="black" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Loading Indicator */}
+        {loading && <ActivityIndicator size={'large'} color={'#000'} />}
+
+        {/* Content */}
+        {userTrips?.length === 0 ? (
+          <StartNewTripCard />
+        ) : (
+          <UserTripList userTrips={userTrips} />
+        )}
+      </ScrollView>
     </View>
   );
 }

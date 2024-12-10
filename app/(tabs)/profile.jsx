@@ -64,7 +64,7 @@ const Profile = () => {
       <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
         <Text style={styles.shareButtonText}>Share App</Text>
       </TouchableOpacity>
-      <Text style={styles.footer}>Developed by Pushkal Vashishtha</Text>
+      <Text style={styles.footer}></Text>
     </View>
   );
 };
